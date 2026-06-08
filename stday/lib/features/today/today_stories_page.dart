@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/constants/catalog.dart';
 import '../../core/layout/app_layout.dart';
 import '../../core/models/mood_island_config.dart';
 import '../../core/theme/mood_theme.dart';
@@ -21,6 +20,7 @@ import 'widgets/story_day_filter_bar.dart';
 import 'widgets/today_mood_recap_bar.dart';
 import '../../data/models/mood_check_in_models.dart';
 import '../../providers/mood_report_check_in_provider.dart';
+import 'moment_story_reader.dart';
 
 class TodayStoriesPage extends ConsumerStatefulWidget {
   const TodayStoriesPage({super.key});
@@ -45,14 +45,10 @@ class _TodayStoriesPageState extends ConsumerState<TodayStoriesPage> {
     _islandKey.currentState?.playMoment(moment.id);
     if (!mounted) return;
     final palette = ref.read(moodPaletteProvider);
-    showModalBottomSheet<void>(
+    showMomentStoryReader(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => _CharacterInteractionSheet(
-        palette: palette,
-        moment: moment,
-      ),
+      palette: palette,
+      moment: moment,
     );
   }
 
@@ -388,6 +384,11 @@ class _TodayStoriesPageState extends ConsumerState<TodayStoriesPage> {
                         palette: pagePalette,
                         readOnly: !editable,
                         onEdit: editable ? () => _openEdit(m) : null,
+                        onRead: () => showMomentStoryReader(
+                          context: context,
+                          palette: pagePalette,
+                          moment: m,
+                        ),
                         onPlay: () =>
                             _islandKey.currentState?.playMoment(m.id),
                         onDelete:
@@ -431,98 +432,6 @@ class _TodayStoriesPageState extends ConsumerState<TodayStoriesPage> {
                 ),
               ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _CharacterInteractionSheet extends StatelessWidget {
-  const _CharacterInteractionSheet({
-    required this.palette,
-    required this.moment,
-  });
-
-  final MoodPalette palette;
-  final DailyMomentModel moment;
-
-  @override
-  Widget build(BuildContext context) {
-    final story = moment.note?.trim();
-    final subtitle = (story == null || story.isEmpty) ? '它看起来有话想跟你说。' : story;
-    final tagLabels = momentSelectionLabels(
-      tags: moment.eventTags,
-      emotionTag: moment.emotionTag,
-    );
-
-    return SafeArea(
-      top: false,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
-          decoration: BoxDecoration(
-            color: palette.card.withValues(alpha: 0.97),
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.65)),
-            boxShadow: [
-              BoxShadow(
-                color: palette.accent.withValues(alpha: 0.16),
-                blurRadius: 24,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: tagLabels
-                    .map(
-                      (label) => Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 5,
-                        ),
-                        decoration: BoxDecoration(
-                          color: palette.accent.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(
-                            color: palette.accent.withValues(alpha: 0.35),
-                          ),
-                        ),
-                        child: Text(
-                          label,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: palette.accent,
-                          ),
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                subtitle,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF6E5A4A),
-                  height: 1.45,
-                ),
-              ),
-              const SizedBox(height: 14),
-              IslandPrimaryAction(
-                label: '确定',
-                palette: palette,
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          ),
         ),
       ),
     );

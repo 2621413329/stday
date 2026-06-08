@@ -17,6 +17,7 @@ import '../../data/models/profile_models.dart';
 import '../../design_system/mood_face_selector.dart';
 import '../../design_system/slow_progress_bar.dart';
 import '../../providers/app_providers.dart';
+import 'moment_form_widgets.dart';
 import 'widgets/growth_world_viewport.dart';
 
 Future<void> showAddMomentFlow(
@@ -727,19 +728,18 @@ class _NoteStep extends StatelessWidget {
         children: [
           Text('有什么想说的吗？', style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 12),
-          TextField(
-            controller: controller,
-            maxLength: 80,
-            maxLines: 2,
-            decoration: InputDecoration(
-              hintText: hintText,
-              filled: true,
-              fillColor: palette.card,
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(18)),
+          Expanded(
+            child: SingleChildScrollView(
+              child: MomentNoteField(
+                controller: controller,
+                hintText: hintText,
+                fillColor: palette.card,
+                minLines: 4,
+                maxLines: 12,
+              ),
             ),
           ),
-          const Spacer(),
+          const SizedBox(height: 12),
           IslandPrimaryAction(
               label: '把这段经历放进世界', palette: palette, onPressed: onSubmit),
           const SizedBox(height: 16),

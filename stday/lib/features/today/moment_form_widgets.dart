@@ -1,6 +1,68 @@
 import 'package:flutter/material.dart';
 
+import '../../core/constants/moment_limits.dart';
 import '../../design_system/pressable_feedback.dart';
+
+class MomentNoteField extends StatelessWidget {
+  const MomentNoteField({
+    super.key,
+    required this.controller,
+    required this.hintText,
+    this.textAlign = TextAlign.start,
+    this.fillColor,
+    this.minLines = 4,
+    this.maxLines = 10,
+  });
+
+  final TextEditingController controller;
+  final String hintText;
+  final TextAlign textAlign;
+  final Color? fillColor;
+  final int minLines;
+  final int maxLines;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      textAlign: textAlign,
+      minLines: minLines,
+      maxLines: maxLines,
+      maxLength: momentNoteMaxLength,
+      keyboardType: TextInputType.multiline,
+      textInputAction: TextInputAction.newline,
+      buildCounter: (
+        context, {
+        required currentLength,
+        required isFocused,
+        maxLength,
+      }) {
+        final limit = maxLength ?? momentNoteMaxLength;
+        final ratio = currentLength / limit;
+        final color = ratio >= 0.95
+            ? const Color(0xFFE8A04C)
+            : ratio >= 0.8
+                ? const Color(0xFFB8956A)
+                : const Color(0xFF9A8B7E);
+        return Padding(
+          padding: const EdgeInsets.only(top: 6),
+          child: Text(
+            '$currentLength / $limit',
+            style: TextStyle(fontSize: 12, color: color),
+          ),
+        );
+      },
+      decoration: InputDecoration(
+        hintText: hintText,
+        hintStyle: const TextStyle(fontSize: 13),
+        filled: true,
+        fillColor: fillColor,
+        alignLabelWithHint: true,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+    );
+  }
+}
 
 class MomentTagChoice {
   const MomentTagChoice({

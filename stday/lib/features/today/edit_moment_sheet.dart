@@ -390,21 +390,14 @@ class _EditMomentSheetState extends ConsumerState<EditMomentSheet> {
                         const SizedBox(height: 10),
                         ConstrainedBox(
                           constraints: const BoxConstraints(maxWidth: 360),
-                          child: TextField(
+                          child: MomentNoteField(
                             controller: _noteCtrl,
                             textAlign: TextAlign.center,
-                            maxLength: 80,
-                            maxLines: 3,
-                            decoration: InputDecoration(
-                              hintText: _noteHint,
-                              hintStyle: const TextStyle(fontSize: 13),
-                              filled: true,
-                              fillColor: palette.primaryContainer
-                                  .withValues(alpha: 0.35),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                            ),
+                            hintText: _noteHint,
+                            fillColor: palette.primaryContainer
+                                .withValues(alpha: 0.35),
+                            minLines: 4,
+                            maxLines: 12,
                           ),
                         ),
                       ],

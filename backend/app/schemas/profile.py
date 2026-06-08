@@ -36,10 +36,13 @@ class ProfileOnboardingComplete(BaseModel):
     onboarding_completed: bool = True
 
 
+MOMENT_NOTE_MAX_LENGTH = 500
+
+
 class DailyMomentCreate(BaseModel):
     event_tags: list[str] = Field(min_length=1, max_length=8)
     emotion_tag: str = Field(pattern="^(happy|calm|thinking|sad|angry)$")
-    note: str | None = Field(default=None, max_length=200)
+    note: str | None = Field(default=None, max_length=MOMENT_NOTE_MAX_LENGTH)
 
 
 class WeekCheckInDayRead(BaseModel):

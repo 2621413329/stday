@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/constants/catalog.dart';
+import '../../core/constants/moment_limits.dart';
 import '../../core/theme/mood_theme.dart';
 import '../../data/models/profile_models.dart';
 import '../../design_system/companion_avatar.dart';
@@ -55,7 +56,7 @@ class _MomentStoryCardState extends State<MomentStoryCard> {
                   Expanded(
                     child: Text(
                       summary,
-                      maxLines: 3,
+                      maxLines: momentNoteCardMaxLines,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(fontSize: 14, height: 1.45, color: Color(0xFF5C5048)),
                     ),

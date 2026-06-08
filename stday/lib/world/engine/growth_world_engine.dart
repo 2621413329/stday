@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import '../../core/constants/moment_limits.dart';
 import '../../core/models/character_mood.dart';
 import '../../core/models/mood_island_config.dart';
 import '../systems/building_system.dart';
@@ -107,7 +108,8 @@ class GrowthWorldEngine {
     required bool compact,
   }) {
     final noteLength = event.note?.trim().length ?? 0;
-    final richness = (noteLength / 80).clamp(0.0, 1.0);
+    final richness =
+        (noteLength / momentNoteRichnessReferenceLength).clamp(0.0, 1.0);
     final tagBoost = (event.eventTags.length - 1).clamp(0, 3) * 0.03;
     final recencyBoost = index == 0 ? 0.06 : 0.0;
     final crowd = _crowdScaleFactor(total, compact);
