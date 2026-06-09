@@ -25,7 +25,7 @@ class CompanionPainter extends CustomPainter {
   final double performanceLevel;
   final bool showAura;
 
-  /// male=光头，female=长发
+  /// male/female 只影响软陶 Mascot 的轮廓比例，不添加服装或配饰。
   final String? gender;
 
   bool get isCozy => style == 'cozy';
@@ -40,6 +40,7 @@ class CompanionPainter extends CustomPainter {
         expression: expression,
         prop: prop,
         gender: gender,
+        starCoreColor: glow,
         performanceLevel: performanceLevel,
       );
       return;

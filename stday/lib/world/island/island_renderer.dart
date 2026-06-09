@@ -54,12 +54,12 @@ class IslandRenderer {
       Canvas canvas, Size size, IslandState island, MoodEnvironmentState env) {
     final profile = IslandShapeProfile.resolve(island.style);
     final isGrowth = _biomeKey(island) == 'growth_world';
-    final tierBoost = isGrowth ? (1.0 + island.prosperityTier * 0.06) : 1.0;
+    final tierBoost = isGrowth ? 1.0 : 1.0 + island.prosperityTier * 0.06;
     final thicknessScale = compact ? 1.18 : 1.0;
     final thickness = size.height *
         island.elevation *
         thicknessScale *
-        (isGrowth ? 1.08 : 1.0) *
+        (isGrowth ? 0.92 : 1.0) *
         tierBoost;
 
     if (isGrowth) {
@@ -222,6 +222,10 @@ class IslandRenderer {
             ..strokeWidth = 0.8,
         );
       }
+    }
+
+    if (isGrowth) {
+      return;
     }
 
     final bottomPaint = Paint()

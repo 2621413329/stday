@@ -27,31 +27,62 @@ class SkyLayer extends WorldLayer {
           end: Alignment.bottomCenter,
           colors: isGrowth
               ? [
-                  const Color(0xFFE8F4F8),
-                  const Color(0xFFD4EFF5),
-                  Color.lerp(env.skyBottom, env.sea, 0.25)!,
+                  Color.lerp(env.skyTop, Colors.white, 0.16)!,
+                  Color.lerp(env.skyBottom, Colors.white, 0.08)!,
+                  Color.lerp(env.skyBottom, env.sea, 0.30)!,
                 ]
               : [
                   env.skyTop,
                   env.skyBottom,
                   Color.lerp(env.skyBottom, env.sea, 0.35)!,
                 ],
-          stops: isGrowth ? const [0, 0.45, 1] : const [0, 0.55, 1],
+          stops: isGrowth ? const [0, 0.48, 1] : const [0, 0.55, 1],
         ).createShader(rect),
     );
 
     final sunPos = Offset(s.x * 0.18, s.y * 0.16);
     final sunR = s.x * (0.08 + env.sunIntensity * 0.06);
+    if (env.sunIntensity >= 0.9) {
+      final rayPaint = Paint()
+        ..color = const Color(0xFFFFD54F)
+            .withValues(alpha: (env.sunIntensity - 0.65).clamp(0.0, 0.45))
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.0
+        ..strokeCap = StrokeCap.round;
+      for (var i = 0; i < 14; i++) {
+        final a = i * math.pi * 2 / 14;
+        canvas.drawLine(
+          sunPos + Offset(math.cos(a), math.sin(a)) * (sunR * 0.86),
+          sunPos + Offset(math.cos(a), math.sin(a)) * (sunR * 1.18),
+          rayPaint,
+        );
+      }
+      canvas.drawCircle(
+        sunPos,
+        sunR * 0.62,
+        Paint()
+          ..shader = RadialGradient(
+            colors: [
+              Colors.white.withValues(alpha: 0.98),
+              const Color(0xFFFFD54F).withValues(alpha: 0.78),
+              const Color(0xFFFFA726).withValues(alpha: 0.18),
+            ],
+          ).createShader(Rect.fromCircle(center: sunPos, radius: sunR * 0.75)),
+      );
+    }
     canvas.drawCircle(
       sunPos,
       sunR,
       Paint()
         ..shader = RadialGradient(
           colors: [
-            Colors.white.withValues(alpha: 0.35 + env.sunIntensity * 0.25),
+            const Color(0xFFFFF8E1)
+                .withValues(alpha: 0.36 + env.sunIntensity * 0.28),
+            const Color(0xFFFFD54F)
+                .withValues(alpha: env.sunIntensity >= 0.9 ? 0.18 : 0.0),
             Colors.white.withValues(alpha: 0),
           ],
-        ).createShader(Rect.fromCircle(center: sunPos, radius: sunR * 1.4)),
+        ).createShader(Rect.fromCircle(center: sunPos, radius: sunR * 1.65)),
     );
   }
 }
@@ -156,7 +187,8 @@ class DistantLayer extends WorldLayer {
               const Color(0xFF90A4AE).withValues(alpha: 0.35),
               const Color(0xFFB0BEC5).withValues(alpha: 0.18),
             ],
-          ).createShader(Rect.fromLTWH(baseX - s.x * w, peakY, s.x * w, horizon - peakY)),
+          ).createShader(
+              Rect.fromLTWH(baseX - s.x * w, peakY, s.x * w, horizon - peakY)),
       );
     }
   }

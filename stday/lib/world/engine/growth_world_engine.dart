@@ -71,7 +71,7 @@ class GrowthWorldEngine {
         shapeKey: IslandVisualConfig.fixedShapeKey,
         style: style,
         elevation: style.biome == IslandVisualConfig.fixedBiome
-            ? (input.compact ? 0.16 : 0.18)
+            ? (input.compact ? 0.070 : 0.075)
             : input.compact
                 ? 0.09 + prosperityTier * 0.004
                 : 0.10 + prosperityTier * 0.006,

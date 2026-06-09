@@ -17,7 +17,7 @@ import '../../engine/world_state.dart';
 import 'world_layer.dart';
 
 double _islandCharSize(Vector2 sz, double scale) =>
-    (sz.x * 0.092).clamp(28.0, 62.0).toDouble() * scale;
+    (sz.x * 0.112).clamp(34.0, 76.0).toDouble() * scale;
 
 /// 角色层：用 Canvas 绘制情绪小人（与 CompanionPainter 同风格）+ Y-sort + 靠近建筑姿态切换。
 /// 每个角色是一个独立 [_CharacterSprite]，添加到本层后由 Flame update/render 驱动。
@@ -40,6 +40,7 @@ class CharacterLayer extends WorldLayer with TapCallbacks {
   bool _liteRender = false;
   bool _cozyHero = false;
   String? _companionGender;
+  String? _worldMoodId;
 
   @override
   bool containsLocalPoint(Vector2 point) => true;
@@ -47,6 +48,7 @@ class CharacterLayer extends WorldLayer with TapCallbacks {
   @override
   void onWorldStateChanged(WorldState worldState) {
     _companionGender = worldState.companionGender;
+    _worldMoodId = worldState.island.style.moodId;
     _cozyHero = worldState.island.style.biome == 'growth_world' ||
         companionStyle == 'cozy';
     _rebuildSprites(worldState);
@@ -65,7 +67,8 @@ class CharacterLayer extends WorldLayer with TapCallbacks {
       final nearbyBuilding = _nearestBuilding(c, s.buildings);
       final existing = existingById[c.id];
       if (existing != null) {
-        existing.updateSnapshot(c, nearbyBuilding, _companionGender);
+        existing.updateSnapshot(
+            c, nearbyBuilding, _companionGender, _worldMoodId);
         nextSprites.add(existing);
       } else {
         nextSprites.add(_CharacterSprite(
@@ -73,6 +76,7 @@ class CharacterLayer extends WorldLayer with TapCallbacks {
           nearbyBuilding: nearbyBuilding,
           companionStyle: companionStyle,
           companionGender: _companionGender,
+          worldMoodId: _worldMoodId,
           cozyHero: _cozyHero,
         ));
       }
@@ -166,6 +170,7 @@ class _CharacterSprite {
     required this.snapshot,
     required this.companionStyle,
     this.companionGender,
+    this.worldMoodId,
     this.nearbyBuilding,
     this.cozyHero = false,
   }) : _seed = _stablePhase(snapshot.id);
@@ -173,6 +178,7 @@ class _CharacterSprite {
   CharacterSnapshot snapshot;
   final String companionStyle;
   String? companionGender;
+  String? worldMoodId;
   BuildingSnapshot? nearbyBuilding;
   final bool cozyHero;
 
@@ -190,10 +196,12 @@ class _CharacterSprite {
     CharacterSnapshot nextSnapshot,
     BuildingSnapshot? nextNearbyBuilding,
     String? gender,
+    String? moodId,
   ) {
     snapshot = nextSnapshot;
     nearbyBuilding = nextNearbyBuilding;
     companionGender = gender;
+    worldMoodId = moodId;
   }
 
   void update(double dt) {
@@ -294,6 +302,7 @@ class _CharacterSprite {
         expression: renderState.expression,
         prop: renderState.prop,
         gender: companionGender,
+        starCoreColor: _starCoreColor(worldMoodId, snapshot.mood),
         performanceLevel: _perfLevel,
         bodyBob: bodyBob,
         dx: performance.dx,
@@ -482,6 +491,24 @@ class _CharacterSprite {
         CharacterMood.proud => moodColor('happy'),
         CharacterMood.calm => moodColor('calm'),
       };
+
+  static Color _starCoreColor(String? moodId, CharacterMood fallback) {
+    return switch (moodId) {
+      'happy' => const Color(0xFFFFD76A),
+      'calm' => const Color(0xFF8EC5FF),
+      'expecting' || 'hopeful' || 'proud' => const Color(0xFF5FE3C0),
+      'sad' => const Color(0xFF9FD7FF),
+      'thinking' || 'anxious' => const Color(0xFFB79CFF),
+      'angry' => const Color(0xFFFF7A4D),
+      _ => switch (fallback) {
+          CharacterMood.happy => const Color(0xFFFFD76A),
+          CharacterMood.calm => const Color(0xFF8EC5FF),
+          CharacterMood.proud => const Color(0xFF5FE3C0),
+          CharacterMood.anxious => const Color(0xFFB79CFF),
+          CharacterMood.angry => const Color(0xFFFF7A4D),
+        },
+    };
+  }
 
   static Color? _parseTint(String? hex) {
     if (hex == null || hex.length != 7 || !hex.startsWith('#')) return null;
