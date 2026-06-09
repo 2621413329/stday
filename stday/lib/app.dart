@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/theme/mood_theme.dart';
 import 'design_system/app_startup_splash.dart';
-import 'design_system/phone_viewport.dart';
+import 'design_system/adaptive_viewport.dart';
 import 'providers/app_providers.dart';
 import 'providers/bootstrap_provider.dart';
 import 'router/app_router.dart';
@@ -39,7 +39,7 @@ class StdayApp extends ConsumerWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              PhoneViewport(child: child ?? const SizedBox.shrink()),
+              AdaptiveViewport(child: child ?? const SizedBox.shrink()),
               if (!settled)
                 const AppStartupSplash(message: '正在唤醒成长小岛…'),
             ],

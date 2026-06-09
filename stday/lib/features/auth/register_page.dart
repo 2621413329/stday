@@ -7,6 +7,7 @@ import '../../core/constants/school_classes.dart';
 import '../../core/theme/mood_theme.dart';
 import '../../data/repositories/app_repository.dart';
 import '../../design_system/companion_avatar.dart';
+import '../../design_system/password_text_field.dart';
 import '../../design_system/island_chip.dart';
 import '../../design_system/island_decorations.dart';
 import '../../providers/app_providers.dart';
@@ -88,17 +89,17 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           child: LayoutBuilder(
             builder: (context, constraints) {
               return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
+                ),
                 padding: EdgeInsets.fromLTRB(
                   20,
                   16,
                   20,
                   24 + MediaQuery.viewInsetsOf(context).bottom,
                 ),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                  child: IntrinsicHeight(
-                    child: Column(
-                      children: [
+                child: Column(
+                  children: [
                 IslandGlassCard(
                   palette: palette,
                   child: Column(
@@ -141,32 +142,21 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                TextField(
+                PasswordTextField(
                   controller: _passCtrl,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: '密码',
-                    filled: true,
-                    fillColor: palette.card,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(18)),
-                  ),
+                  fillColor: palette.card,
                 ),
                 const SizedBox(height: 16),
-                TextField(
+                PasswordTextField(
                   controller: _confirmCtrl,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: '确认密码',
-                    filled: true,
-                    fillColor: palette.card,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(18)),
-                  ),
+                  labelText: '确认密码',
+                  fillColor: palette.card,
                 ),
                 if (_error != null) ...[
                   const SizedBox(height: 12),
                   Text(_error!, style: const TextStyle(color: Colors.redAccent, fontSize: 13)),
                 ],
-                const Spacer(),
+                const SizedBox(height: 32),
                 IslandPrimaryAction(
                   label: '注册并上岛',
                   loading: _loading,
@@ -180,8 +170,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 ),
                         const SizedBox(height: 24),
                       ],
-                    ),
-                  ),
                 ),
               );
             },

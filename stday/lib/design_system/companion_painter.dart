@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../world/rendering/cozy_hero_renderer.dart';
+
 /// 半透明精神体：按 expression / prop / tint 绘制情绪、姿态与经历物件。
 class CompanionPainter extends CustomPainter {
   CompanionPainter({
@@ -22,13 +24,28 @@ class CompanionPainter extends CustomPainter {
   final Color glow;
   final double performanceLevel;
   final bool showAura;
-  /// male=光头，female=长发
+
+  /// male/female 只影响软陶 Mascot 的轮廓比例，不添加服装或配饰。
   final String? gender;
 
+  bool get isCozy => style == 'cozy';
   bool get isChibi => style == 'chibi_legacy';
 
   @override
   void paint(Canvas canvas, Size size) {
+    if (isCozy) {
+      CozyHeroRenderer.paintInRect(
+        canvas,
+        size,
+        expression: expression,
+        prop: prop,
+        gender: gender,
+        starCoreColor: glow,
+        performanceLevel: performanceLevel,
+      );
+      return;
+    }
+
     final center = Offset(size.width / 2, size.height * 0.55);
     final boost = 0.35 + performanceLevel * 0.45;
     final bodyPaint = Paint()
@@ -380,8 +397,8 @@ class CompanionPainter extends CustomPainter {
         canvas.drawRRect(shoe, fill);
         canvas.drawRRect(shoe, stroke);
         canvas.drawOval(
-          Rect.fromLTWH(size.width * 0.72, size.height * 0.52, size.width * 0.06,
-              size.height * 0.05),
+          Rect.fromLTWH(size.width * 0.72, size.height * 0.52,
+              size.width * 0.06, size.height * 0.05),
           stroke..strokeWidth = 1.2,
         );
       case 'game_controller':
@@ -532,14 +549,14 @@ class CompanionPainter extends CustomPainter {
     canvas.drawRRect(body, fill);
     canvas.drawRRect(body, stroke);
     final btnPaint = Paint()..color = tint.withValues(alpha: 0.75);
-    canvas.drawCircle(
-        Offset(size.width * 0.72, size.height * 0.51), size.width * 0.028, btnPaint);
-    canvas.drawCircle(
-        Offset(size.width * 0.80, size.height * 0.51), size.width * 0.028, btnPaint);
-    canvas.drawCircle(
-        Offset(size.width * 0.76, size.height * 0.47), size.width * 0.028, btnPaint);
-    canvas.drawCircle(
-        Offset(size.width * 0.76, size.height * 0.55), size.width * 0.028, btnPaint);
+    canvas.drawCircle(Offset(size.width * 0.72, size.height * 0.51),
+        size.width * 0.028, btnPaint);
+    canvas.drawCircle(Offset(size.width * 0.80, size.height * 0.51),
+        size.width * 0.028, btnPaint);
+    canvas.drawCircle(Offset(size.width * 0.76, size.height * 0.47),
+        size.width * 0.028, btnPaint);
+    canvas.drawCircle(Offset(size.width * 0.76, size.height * 0.55),
+        size.width * 0.028, btnPaint);
     if (expression == 'happy') {
       canvas.drawCircle(
         Offset(size.width * 0.86, size.height * 0.38),

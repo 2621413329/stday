@@ -55,6 +55,9 @@ class _GenderPageState extends ConsumerState<GenderPage> {
           child: LayoutBuilder(
             builder: (context, constraints) {
               return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
+                ),
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppLayout.pageHorizontal,
                   vertical: 20,
@@ -65,55 +68,56 @@ class _GenderPageState extends ConsumerState<GenderPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                    Text(
-                      '选择你的性别',
-                      style: Theme.of(context).textTheme.headlineSmall,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      '小星会根据你的选择换上对应发型',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Color(0xFF8C7B6B)),
-                    ),
-                    const SizedBox(height: 24),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: _GenderOptionCard(
-                            gender: 'male',
-                            label: '男生',
-                            subtitle: '光头小星',
-                            selected: _selected == 'male',
-                            palette: palette,
-                            onTap: _loading
-                                ? null
-                                : () => setState(() => _selected = 'male'),
+                      Text(
+                        '选择你的性别',
+                        style: Theme.of(context).textTheme.headlineSmall,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        '小星会根据你的选择换上对应发型',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Color(0xFF8C7B6B)),
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: _GenderOptionCard(
+                              gender: 'male',
+                              label: '男生',
+                              subtitle: '小呆毛小星',
+                              selected: _selected == 'male',
+                              palette: palette,
+                              onTap: _loading
+                                  ? null
+                                  : () => setState(() => _selected = 'male'),
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: _GenderOptionCard(
-                            gender: 'female',
-                            label: '女生',
-                            subtitle: '长发小星',
-                            selected: _selected == 'female',
-                            palette: palette,
-                            onTap: _loading
-                                ? null
-                                : () => setState(() => _selected = 'female'),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: _GenderOptionCard(
+                              gender: 'female',
+                              label: '女生',
+                              subtitle: '长发小星',
+                              selected: _selected == 'female',
+                              palette: palette,
+                              onTap: _loading
+                                  ? null
+                                  : () => setState(() => _selected = 'female'),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 28),
-                    IslandPrimaryAction(
-                      label: '进入成长小岛',
-                      palette: palette,
-                      loading: _loading,
-                      onPressed: _selected == null || _loading ? null : _enterApp,
-                    ),
+                        ],
+                      ),
+                      const SizedBox(height: 28),
+                      IslandPrimaryAction(
+                        label: '进入成长小岛',
+                        palette: palette,
+                        loading: _loading,
+                        onPressed:
+                            _selected == null || _loading ? null : _enterApp,
+                      ),
                     ],
                   ),
                 ),
@@ -154,7 +158,9 @@ class _GenderOptionCard extends StatelessWidget {
           color: selected ? palette.primaryContainer : palette.card,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: selected ? palette.accent : palette.accent.withValues(alpha: 0.25),
+            color: selected
+                ? palette.accent
+                : palette.accent.withValues(alpha: 0.25),
             width: selected ? 2.5 : 1,
           ),
           boxShadow: selected

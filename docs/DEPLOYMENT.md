@@ -272,7 +272,7 @@ flutter build windows --release --dart-define=API_BASE_URL=http://39.106.134.222
 | `DATABASE_URL` | 是 | — | PostgreSQL 异步连接串 |
 | `JWT_SECRET_KEY` | 是 | — | JWT 签名密钥 |
 | `JWT_ALGORITHM` | 否 | `HS256` | JWT 算法 |
-| `JWT_EXPIRE_MINUTES` | 否 | `1440` | Token 有效期（分钟） |
+| `JWT_EXPIRE_MINUTES` | 否 | `5256000` | Token 有效期（分钟，默认约 10 年） |
 | `PROJECT_NAME` | 否 | `AI成长观察系统` | 应用名称 |
 | `DEBUG` | 否 | `false` | 调试模式 |
 | `QWEN_API_KEY` | AI 功能 | — | 千问 API Key |

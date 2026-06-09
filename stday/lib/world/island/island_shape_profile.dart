@@ -38,12 +38,13 @@ class IslandShapeProfile {
     };
   }
 
-  Path _growthWorldPath(Size size, {required double lift, required bool compact}) {
+  Path _growthWorldPath(Size size,
+      {required double lift, required bool compact}) {
     final cx = size.width * 0.5;
-    // 参考图：居中圆盘岛，约占屏宽 68%
+    // 参考图：低矮宽圆盘岛，横向展开，避免俯视圆盘感。
     final cy = size.height * (compact ? 0.56 : 0.54) + lift;
-    final rx = size.width * (compact ? 0.36 : 0.34);
-    final ry = size.height * (compact ? 0.155 : 0.135);
+    final rx = size.width * (compact ? 0.40 : 0.42);
+    final ry = size.height * (compact ? 0.125 : 0.105);
     final path = Path();
     for (var i = 0; i <= 128; i++) {
       final t = math.pi * 2 * i / 128;

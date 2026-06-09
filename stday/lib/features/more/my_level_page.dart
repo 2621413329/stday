@@ -14,7 +14,7 @@ import '../../data/repositories/app_repository.dart';
 import '../../providers/app_providers.dart';
 import '../../providers/mood_report_check_in_provider.dart';
 import '../landing/landing_growth_header.dart';
-import '../landing/landing_growth_provider.dart';
+import '../../island/providers/growth_summary_provider.dart';
 import '../landing/landing_island_progress.dart';
 
 final _momentDatesProvider = FutureProvider<Set<DateTime>>((ref) async {
@@ -43,7 +43,7 @@ class MyLevelPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final palette = ref.watch(moodPaletteProvider);
-    final growthAsync = ref.watch(landingGrowthProvider);
+    final growthAsync = ref.watch(growthSummaryProvider);
     final datesAsync = ref.watch(_momentDatesProvider);
     final todayMomentsAsync = ref.watch(todayMomentsProvider);
     final checkInAsync = ref.watch(moodReportCheckInProvider);
@@ -82,18 +82,18 @@ class MyLevelPage extends ConsumerWidget {
                   ),
                   error: (_, __) => _ErrorBody(
                     onRetry: () {
-                      ref.invalidate(landingGrowthProvider);
+                      ref.invalidate(growthSummaryProvider);
                       ref.invalidate(_momentDatesProvider);
                     },
                   ),
                   data: (summary) => RefreshIndicator(
                     color: palette.primary,
                     onRefresh: () async {
-                      ref.invalidate(landingGrowthProvider);
+                      ref.invalidate(growthSummaryProvider);
                       ref.invalidate(_momentDatesProvider);
                       ref.invalidate(todayMomentsProvider);
                       ref.invalidate(moodReportCheckInProvider);
-                      await ref.read(landingGrowthProvider.future);
+                      await ref.read(growthSummaryProvider.future);
                     },
                     child: ListView(
                       padding: const EdgeInsets.fromLTRB(

@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../design_system/island_decorations.dart';
 import '../../providers/app_providers.dart';
 import '../../providers/auth_provider.dart';
-import '../landing/landing_growth_provider.dart';
+import '../../island/providers/growth_summary_provider.dart';
 
 class MorePage extends ConsumerWidget {
   const MorePage({super.key});
@@ -14,7 +14,7 @@ class MorePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final palette = ref.watch(moodPaletteProvider);
     final profile = ref.watch(profileProvider).valueOrNull;
-    final growthAsync = ref.watch(landingGrowthProvider);
+    final growthAsync = ref.watch(growthSummaryProvider);
     final summary = growthAsync.valueOrNull;
     final nickname = profile?.nickname;
     final levelSubtitle = summary == null

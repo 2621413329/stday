@@ -1,4 +1,29 @@
+import '../../core/growth/growth_system.dart';
 import '../../core/models/companion_spec.dart';
+
+class EmotionFragmentSummary {
+  const EmotionFragmentSummary({
+    required this.totalCount,
+    required this.totals,
+  });
+
+  final int totalCount;
+  final Map<String, int> totals;
+
+  factory EmotionFragmentSummary.fromJson(Map<String, dynamic> json) {
+    final raw = json['totals'];
+    final totals = <String, int>{};
+    if (raw is Map) {
+      raw.forEach((key, value) {
+        totals['$key'] = value is int ? value : int.tryParse('$value') ?? 0;
+      });
+    }
+    return EmotionFragmentSummary(
+      totalCount: json['total_count'] as int? ?? 0,
+      totals: totals,
+    );
+  }
+}
 
 class UserProfileModel {
   UserProfileModel({
@@ -9,6 +34,8 @@ class UserProfileModel {
     this.gender,
     this.companionStyle,
     this.todayMood,
+    this.growth,
+    this.emotionFragments,
   });
 
   final String userId;
@@ -18,6 +45,8 @@ class UserProfileModel {
   final String? companionStyle;
   final String? todayMood;
   final bool onboardingCompleted;
+  final GrowthSummary? growth;
+  final EmotionFragmentSummary? emotionFragments;
 
   factory UserProfileModel.fromJson(Map<String, dynamic> json) {
     return UserProfileModel(
@@ -28,6 +57,14 @@ class UserProfileModel {
       companionStyle: json['companion_style'] as String?,
       todayMood: json['today_mood'] as String?,
       onboardingCompleted: json['onboarding_completed'] as bool? ?? false,
+      growth: json['growth'] is Map<String, dynamic>
+          ? GrowthSummary.fromJson(json['growth'] as Map<String, dynamic>)
+          : null,
+      emotionFragments: json['emotion_fragments'] is Map<String, dynamic>
+          ? EmotionFragmentSummary.fromJson(
+              json['emotion_fragments'] as Map<String, dynamic>,
+            )
+          : null,
     );
   }
 }
@@ -74,6 +111,40 @@ class DailyMomentModel {
     final raw = visualPayload['waiting_lines'];
     if (raw is List) return raw.map((e) => '$e').toList();
     return const [];
+  }
+
+  /// 故事总结话语（生成时固定 3 条，详情页点击小人随机展示其一）。
+  List<String> get storySummaryLines {
+    final raw = visualPayload['story_summary_lines'];
+    if (raw is List) {
+      final lines = raw
+          .map((e) => '$e'.trim())
+          .where((line) => line.isNotEmpty)
+          .toList();
+      if (lines.isNotEmpty) return lines;
+    }
+    if (note != null && note!.trim().isNotEmpty) {
+      final snippet = note!.trim();
+      final clipped = snippet.length > 24 ? '${snippet.substring(0, 24)}…' : snippet;
+      return [
+        '我记得你说：$clipped',
+        '这一刻的心情，小岛替你收好了',
+        '每次点我，我都会陪你回味这件事',
+      ];
+    }
+    if (eventTags.isNotEmpty) {
+      final tagLine = eventTags.where((t) => t != '自定义').join(' · ');
+      return [
+        '关于$tagLine的这件事，值得被记住',
+        '当时的心情，我都替你收在小岛上了',
+        '点我，我会用不同的话陪你回味',
+      ];
+    }
+    return const [
+      '这一刻的心情，小岛替你收好了',
+      '每次点我，我都会陪你回味这件事',
+      '你的故事，值得被温柔记住',
+    ];
   }
 
   String? get performanceHint => visualPayload['performance_hint'] as String?;

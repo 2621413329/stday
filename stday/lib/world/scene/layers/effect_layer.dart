@@ -138,7 +138,7 @@ class EffectLayer extends WorldLayer {
       _drawLeaves(canvas, s);
       return;
     }
-    final count = preset == 'golden_sparkle' ? 16 : 12;
+    final count = preset == 'golden_sparkle' ? 26 : 12;
     for (var i = 0; i < count; i++) {
       final p = Offset(
         s.x * (0.15 + (i * 0.061) % 0.7),
@@ -147,8 +147,15 @@ class EffectLayer extends WorldLayer {
       final alpha = 0.2 + 0.25 * math.sin(_time + i).abs();
       canvas.drawCircle(
         p,
-        preset == 'bloom' ? 2.8 : 2.2,
-        Paint()..color = accent.withValues(alpha: alpha),
+        preset == 'golden_sparkle'
+            ? 3.0
+            : preset == 'bloom'
+                ? 2.8
+                : 2.2,
+        Paint()
+          ..color =
+              (preset == 'golden_sparkle' ? const Color(0xFFFFD54F) : accent)
+                  .withValues(alpha: alpha),
       );
     }
   }

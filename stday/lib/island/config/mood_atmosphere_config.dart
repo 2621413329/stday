@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../core/models/character_mood.dart';
-import 'island_visual_config.dart';
 
 /// 情绪仅影响氛围，不改变岛屿结构。
 class MoodAtmospherePreset {
@@ -26,6 +25,7 @@ class MoodAtmospherePreset {
   final double waveIntensity;
   final String particlePreset;
   final bool rain;
+
   /// 环境生命感：seagulls | breeze | drizzle | wind | starglow
   final String lifePreset;
   final double fogOpacity;
@@ -37,12 +37,12 @@ class MoodAtmosphereConfig {
   static MoodAtmospherePreset resolve(String? moodId) {
     return switch (moodId) {
       'happy' => const MoodAtmospherePreset(
-          skyTop: Color(0xFFFFF4DF),
-          skyBottom: Color(0xFFBDEFFF),
-          sunIntensity: 0.95,
-          cloudDensity: 0.18,
-          windStrength: 0.15,
-          waveIntensity: 0.45,
+          skyTop: Color(0xFFFFE3A8),
+          skyBottom: Color(0xFFFFF2C7),
+          sunIntensity: 1.18,
+          cloudDensity: 0.06,
+          windStrength: 0.10,
+          waveIntensity: 0.55,
           particlePreset: 'golden_sparkle',
           rain: false,
           lifePreset: 'seagulls',

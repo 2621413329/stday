@@ -43,7 +43,10 @@ class _IslandHomePageState extends ConsumerState<IslandHomePage> {
     final palette = ref.watch(moodPaletteProvider);
     final growthAsync = ref.watch(growthSummaryProvider);
     final summary = growthAsync.valueOrNull ?? GrowthSummary.guest();
-    final moodLabel = summary.todayWeatherLabel.replaceFirst(RegExp(r'^[☀🌫🌧✨]\s*'), '');
+    final profile = ref.watch(profileProvider).valueOrNull;
+    final moodId = summary.todayMood ?? profile?.todayMood ?? 'calm';
+    final moodLabel = summary.todayWeatherLabel
+        .replaceFirst(RegExp(r'^[^\u4e00-\u9fa5A-Za-z0-9]+\s*'), '');
 
     return Scaffold(
       backgroundColor: const Color(0xFFE8F4F8),
@@ -59,7 +62,7 @@ class _IslandHomePageState extends ConsumerState<IslandHomePage> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              Positioned.fill(
+              const Positioned.fill(
                 child: GrowthWorldViewport(
                   useIslandWorldProvider: true,
                   interactive: false,
@@ -68,6 +71,7 @@ class _IslandHomePageState extends ConsumerState<IslandHomePage> {
               Positioned.fill(
                 child: IslandHudOverlay(
                   summary: summary,
+                  todayMoodId: moodId,
                   todayMoodLabel: moodLabel.isEmpty ? '平静' : moodLabel,
                   onRecordTap: () => context.go('/records'),
                   onMoodTap: () => context.go('/records'),

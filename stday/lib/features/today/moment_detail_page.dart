@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +12,7 @@ import '../../core/theme/app_fonts.dart';
 import '../../core/theme/mood_theme.dart';
 import '../../core/utils/moment_date_groups.dart';
 import '../../data/models/profile_models.dart';
+import '../../design_system/companion_speech_bubble.dart';
 import '../../design_system/island_chip.dart';
 import '../../design_system/island_decorations.dart';
 import '../../design_system/mood_face_painter.dart';
@@ -82,6 +86,7 @@ class _MomentDetailPageState extends ConsumerState<MomentDetailPage> {
     final saved = await showEditMomentSheet(context, ref, moment: _moment);
     if (saved == true && mounted) {
       await _refreshMoment();
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('故事已更新')),
       );
@@ -97,7 +102,7 @@ class _MomentDetailPageState extends ConsumerState<MomentDetailPage> {
     final hasNote = note != null && note.isNotEmpty;
     final storyDay = momentCalendarDate(_moment);
 
-    final companionBottomInset = _editable ? 92.0 : 20.0;
+    const companionBottomInset = 20.0;
 
     return Scaffold(
       body: IslandScaffold(
@@ -105,88 +110,84 @@ class _MomentDetailPageState extends ConsumerState<MomentDetailPage> {
         child: SafeArea(
           child: Stack(
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      4,
-                      4,
-                      AppLayout.pageHorizontal,
-                      0,
-                    ),
-                    child: Row(
-                      children: [
-                        IconButton(
-                          onPressed: () => Navigator.pop(context),
-                          icon: const Icon(Icons.arrow_back_rounded),
-                          color: const Color(0xFF5D4E44),
-                        ),
-                        Expanded(
-                          child: Text(
-                            '故事详情',
-                            style: appTextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: const Color(0xFF3D3229),
-                            ),
-                          ),
-                        ),
-                        if (_editable)
-                          TextButton.icon(
-                            onPressed: _openEdit,
-                            icon: const Icon(Icons.edit_outlined, size: 18),
-                            label: const Text('编辑'),
-                            style: TextButton.styleFrom(
-                              foregroundColor: palette.accent,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.fromLTRB(
+              CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
+                ),
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        4,
+                        4,
                         AppLayout.pageHorizontal,
-                        8,
-                        AppLayout.pageHorizontal,
-                        companionBottomInset + 88,
+                        0,
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                      child: Row(
                         children: [
-                          _TagBreadcrumb(path: _tagPath, palette: palette),
-                          const SizedBox(height: 10),
-                          _MoodMetaRow(mood: mood, palette: palette),
-                          const SizedBox(height: 20),
-                          _StoryBodyCard(
-                            palette: palette,
-                            note: hasNote ? note! : null,
+                          IconButton(
+                            onPressed: () => Navigator.pop(context),
+                            icon: const Icon(Icons.arrow_back_rounded),
+                            color: const Color(0xFF5D4E44),
                           ),
-                          const SizedBox(height: 20),
-                          _RecordMetaRow(
-                            palette: palette,
-                            storyDayLabel: formatMomentDateLabel(storyDay),
-                            recordTime: formatMomentRecordTime(_moment),
+                          Expanded(
+                            child: Text(
+                              '故事详情',
+                              style: appTextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF3D3229),
+                              ),
+                            ),
                           ),
+                          if (_editable)
+                            TextButton.icon(
+                              onPressed: _openEdit,
+                              icon: const Icon(Icons.edit_outlined, size: 18),
+                              label: const Text('编辑'),
+                              style: TextButton.styleFrom(
+                                foregroundColor: palette.accent,
+                              ),
+                            ),
                         ],
                       ),
                     ),
                   ),
-                  if (_editable)
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                        AppLayout.pageHorizontal,
-                        0,
-                        AppLayout.pageHorizontal,
-                        16,
-                      ),
-                      child: IslandPrimaryAction(
-                        label: '编辑这条故事',
-                        palette: palette,
-                        onPressed: _openEdit,
-                      ),
+                  SliverPadding(
+                    padding: EdgeInsets.fromLTRB(
+                      AppLayout.pageHorizontal,
+                      8,
+                      AppLayout.pageHorizontal,
+                      companionBottomInset + 120,
                     ),
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate([
+                        _TagBreadcrumb(path: _tagPath, palette: palette),
+                        const SizedBox(height: 10),
+                        _MoodMetaRow(mood: mood, palette: palette),
+                        const SizedBox(height: 20),
+                        _StoryBodyCard(
+                          palette: palette,
+                          note: hasNote ? note : null,
+                        ),
+                        const SizedBox(height: 20),
+                        _RecordMetaRow(
+                          palette: palette,
+                          storyDayLabel: formatMomentDateLabel(storyDay),
+                          recordTime: formatMomentRecordTime(_moment),
+                        ),
+                        if (_editable) ...[
+                          const SizedBox(height: 24),
+                          IslandPrimaryAction(
+                            label: '编辑这条故事',
+                            palette: palette,
+                            onPressed: _openEdit,
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                      ]),
+                    ),
+                  ),
                 ],
               ),
               Positioned(
@@ -197,6 +198,7 @@ class _MomentDetailPageState extends ConsumerState<MomentDetailPage> {
                   companionKey: _companionKey,
                   companion: companion,
                   story: CompanionStoryContext.fromMoment(_moment),
+                  summaryLines: _moment.storySummaryLines,
                 ),
               ),
             ],
@@ -389,33 +391,77 @@ class _RecordMetaRow extends StatelessWidget {
   }
 }
 
-class _FloatingCompanion extends StatelessWidget {
+class _FloatingCompanion extends StatefulWidget {
   const _FloatingCompanion({
     required this.palette,
     required this.companionKey,
     required this.companion,
     required this.story,
+    required this.summaryLines,
   });
 
   final MoodPalette palette;
   final GlobalKey<UserCompanionViewState> companionKey;
   final UserCompanion companion;
   final CompanionStoryContext story;
+  final List<String> summaryLines;
+
+  @override
+  State<_FloatingCompanion> createState() => _FloatingCompanionState();
+}
+
+class _FloatingCompanionState extends State<_FloatingCompanion> {
+  static final _rnd = Random();
+  String? _speechText;
+  Timer? _hideTimer;
+
+  @override
+  void dispose() {
+    _hideTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _onTap() async {
+    final lines = widget.summaryLines;
+    if (lines.isEmpty) return;
+    _hideTimer?.cancel();
+    setState(() {
+      _speechText = lines[_rnd.nextInt(lines.length)];
+    });
+    await widget.companionKey.currentState?.playPerformance();
+    _hideTimer = Timer(const Duration(seconds: 5), () {
+      if (mounted) setState(() => _speechText = null);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return PressableFeedback(
-      onTap: () => companionKey.currentState?.playPerformance(),
-      pressedScale: 0.94,
-      semanticLabel: '播放故事小人表演',
-      child: UserCompanionView(
-        key: companionKey,
-        companion: companion,
-        story: story,
-        size: 72,
-        palette: palette,
-        showAura: false,
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        if (_speechText != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: CompanionSpeechBubble(
+              text: _speechText!,
+              palette: widget.palette,
+            ),
+          ),
+        PressableFeedback(
+          onTap: () => unawaited(_onTap()),
+          pressedScale: 0.94,
+          semanticLabel: '点击小人听故事总结',
+          child: UserCompanionView(
+            key: widget.companionKey,
+            companion: widget.companion,
+            story: widget.story,
+            size: 72,
+            palette: widget.palette,
+            showAura: false,
+          ),
+        ),
+      ],
     );
   }
 }

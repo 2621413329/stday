@@ -165,7 +165,7 @@ DEBUG=false
 DATABASE_URL=postgresql+asyncpg://stday_app:你的密码@127.0.0.1:5432/stday
 
 JWT_SECRET_KEY=<随机长字符串，至少32字符>
-JWT_EXPIRE_MINUTES=1440
+JWT_EXPIRE_MINUTES=5256000
 
 TEACHER_REGISTRATION_SECRET=<生产环境自定义密钥，勿用 root>
 

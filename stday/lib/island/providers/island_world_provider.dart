@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/growth/growth_system.dart';
-import '../../core/utils/moment_date_groups.dart';
 import '../../providers/app_providers.dart';
 import '../../providers/story_day_provider.dart';
 import '../../providers/world_state_provider.dart';
@@ -24,10 +23,11 @@ final islandWorldProvider = Provider<WorldState>((ref) {
       ref.watch(growthSummaryProvider).valueOrNull ?? GrowthSummary.guest();
   final profile = ref.watch(profileProvider).valueOrNull;
   final moments = ref.watch(todayMomentsProvider).valueOrNull ?? [];
+  final todayMood = summary.todayMood ?? profile?.todayMood;
   final moodId = resolveStoryDayMoodId(
     viewingToday: true,
     moments: moments,
-    profileTodayMood: profile?.todayMood,
+    profileTodayMood: todayMood,
   );
   final style = ref.read(islandStyleResolverProvider).resolve(moodId: moodId);
   final companion = ref.watch(userCompanionProvider);
