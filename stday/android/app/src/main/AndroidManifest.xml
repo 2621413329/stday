@@ -5,6 +5,16 @@
         <intent>
             <action android:name="android.speech.RecognitionService" />
         </intent>
+        <intent>
+            <action android:name="android.speech.action.RECOGNIZE_SPEECH" />
+        </intent>
+        <package android:name="com.huawei.vassistant" />
+        <package android:name="com.huawei.hiassistantoversea" />
+        <package android:name="com.google.android.googlequicksearchbox" />
+        <package android:name="com.samsung.android.bixby.agent" />
+        <package android:name="com.miui.voiceassist" />
+        <package android:name="com.coloros.speechassist" />
+        <package android:name="com.vivo.agent" />
     </queries>
     <application
         android:label="星屿"
@@ -31,5 +41,11 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data
+            android:name="io.flutter.embedding.android.EnableImpeller"
+            android:value="true" />
+        <meta-data
+            android:name="io.flutter.embedding.android.EnableFlutterGPU"
+            android:value="true" />
     </application>
 </manifest>

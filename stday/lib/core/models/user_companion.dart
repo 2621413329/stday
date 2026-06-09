@@ -14,9 +14,13 @@ class UserCompanion {
   final String profileStyle;
   final String? gender;
 
-  /// 绘制层使用的样式 id（如 mindscape / chibi_legacy）。
+  /// 绘制层使用的样式 id（Growth Island 2.0 统一 cozy 3D 白小人）。
   String get renderStyle {
-    if (profileStyle == 'chibi' || profileStyle == 'normal') return 'mindscape';
+    if (profileStyle == 'chibi' ||
+        profileStyle == 'normal' ||
+        profileStyle == 'mindscape') {
+      return 'cozy';
+    }
     return profileStyle;
   }
 

@@ -20,7 +20,7 @@ import '../../providers/app_providers.dart';
 import '../../design_system/user_companion_view.dart';
 import 'moment_form_widgets.dart';
 import 'moment_generating_panel.dart';
-import 'widgets/growth_world_viewport.dart';
+import '../../island/viewport/growth_world_viewport.dart';
 
 Future<void> showAddMomentFlow(
   BuildContext context,
@@ -415,17 +415,24 @@ class _EventStep extends StatelessWidget {
         children: [
           Text('发生了什么？', style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 16),
-          _MomentTagSelector(
-            selected: selected,
-            options: eventTags
-                .map((t) => _MomentTagChoice(
-                      id: t.id,
-                      label: t.label,
-                      emoji: t.emoji,
-                      color: t.color,
-                    ))
-                .toList(),
-            onPick: onPick,
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics(),
+              ),
+              child: _MomentTagSelector(
+                selected: selected,
+                options: eventTags
+                    .map((t) => _MomentTagChoice(
+                          id: t.id,
+                          label: t.label,
+                          emoji: t.emoji,
+                          color: t.color,
+                        ))
+                    .toList(),
+                onPick: onPick,
+              ),
+            ),
           ),
         ],
       ),
@@ -487,17 +494,24 @@ class _StudyStateStep extends StatelessWidget {
         children: [
           Text('今天的学习状态？', style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 16),
-          _MomentTagSelector(
-            selected: selected,
-            options: studyStateTags
-                .map((t) => _MomentTagChoice(
-                      id: t.id,
-                      label: t.label,
-                      icon: t.icon,
-                      color: t.color,
-                    ))
-                .toList(),
-            onPick: onPick,
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics(),
+              ),
+              child: _MomentTagSelector(
+                selected: selected,
+                options: studyStateTags
+                    .map((t) => _MomentTagChoice(
+                          id: t.id,
+                          label: t.label,
+                          icon: t.icon,
+                          color: t.color,
+                        ))
+                    .toList(),
+                onPick: onPick,
+              ),
+            ),
           ),
         ],
       ),
@@ -707,7 +721,18 @@ class _MoodStep extends StatelessWidget {
         children: [
           Text('此刻心情如何？', style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 20),
-          MoodFaceSelector(selectedId: selected, onSelected: onPick, size: 50),
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics(),
+              ),
+              child: MoodFaceSelector(
+                selectedId: selected,
+                onSelected: onPick,
+                size: 50,
+              ),
+            ),
+          ),
         ],
       ),
     );

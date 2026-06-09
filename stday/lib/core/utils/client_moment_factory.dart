@@ -43,6 +43,8 @@ class ClientMomentFactory {
         'scene_title': title,
         'performance_ms': 2000,
         'waiting_lines': _waitingLines(eventTags, title),
+        'story_summary_lines':
+            _storySummaryLines(eventTags, emotionTag, note, title),
         'performance_hint': note != null && note.length > 4
             ? '小星${emotionTag == 'sad' ? '轻轻叹气看着' : '看着'}${_propLabel(tag)}'
             : '小星缓缓转过身来',
@@ -218,4 +220,63 @@ class ClientMomentFactory {
 
   static String _propLabel(String tag) =>
       {'学习': '练习册', '朋友': '朋友', '运动': '球拍', '家庭': '家', '兴趣': '画板'}[tag] ?? '远方';
+
+  static List<String> _storySummaryLines(
+    List<String> tags,
+    String emotionTag,
+    String? note,
+    String title,
+  ) {
+    final tag = tags.isNotEmpty ? tags.first : '其它';
+    final detail = tags.length > 1 && tags[1] != '自定义' ? tags[1] : null;
+    final moodLabel = switch (emotionTag) {
+      'happy' => '开心',
+      'calm' => '平静',
+      'thinking' => '若有所思',
+      'sad' => '有点难过',
+      'angry' => '心里闷闷的',
+      _ => '有感触',
+    };
+    if (note != null && note.trim().length >= 4) {
+      final snippet =
+          note.trim().length > 18 ? note.trim().substring(0, 18) : note.trim();
+      return [
+        '我记得你说：$snippet',
+        '那一刻你感到$moodLabel，我替你收好了',
+        '关于${detail ?? tag}的这件事，值得被温柔记住',
+      ];
+    }
+    return switch (tag) {
+      '学习' => [
+          '今天的${detail ?? '学习'}让你感到$moodLabel',
+          '那些努力的时刻，小岛都看见了',
+          '$title，我会一直替你记着',
+        ],
+      '朋友' => [
+          '和朋友有关的这一刻，你当时$moodLabel',
+          '友情里的小波澜，也值得被好好安放',
+          '$title，我陪你慢慢回味',
+        ],
+      '运动' => [
+          '运动后的你，心里是$moodLabel的',
+          '汗水和风声，我都帮你收进小岛了',
+          '$title，真是闪亮的一刻',
+        ],
+      '家庭' => [
+          '家里的这件事，让你感到$moodLabel',
+          '家的温度，有时藏在细节里',
+          '$title，我替你轻轻放好',
+        ],
+      '兴趣' => [
+          '做喜欢的事时，你显得$moodLabel',
+          '热爱会让小岛多一盏小灯',
+          '$title，是很珍贵的瞬间',
+        ],
+      _ => [
+          '这一刻你感到$moodLabel',
+          '关于${detail ?? tag}的事，小岛替你收好了',
+          '$title，值得被温柔记住',
+        ],
+    };
+  }
 }

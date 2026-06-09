@@ -77,46 +77,58 @@ class _CompanionPageState extends ConsumerState<CompanionPage> {
       body: IslandScaffold(
         palette: palette,
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              children: [
-                const Text(
-                  '选择你的透明小伙伴',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
                 ),
-                const SizedBox(height: 8),
-                const Text('Q版更可爱，正常版更清秀', style: TextStyle(color: Color(0xFF8C7B6B))),
-                const SizedBox(height: 28),
-                Expanded(
-                  child: Row(
+                padding: const EdgeInsets.all(24),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight - 48),
+                  child: Column(
                     children: [
-                      Expanded(
-                        child: _CompanionOptionCard(
-                          title: 'Q版小星',
-                          style: 'chibi',
-                          selected: _selected == 'chibi',
-                          loading: _loading && _selected == 'chibi',
-                          palette: palette,
-                          onTap: _loading ? null : () => _onSelect('chibi'),
-                        ),
+                      const Text(
+                        '选择你的透明小伙伴',
+                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _CompanionOptionCard(
-                          title: '正常版小星',
-                          style: 'normal',
-                          selected: _selected == 'normal',
-                          loading: _loading && _selected == 'normal',
-                          palette: palette,
-                          onTap: _loading ? null : () => _onSelect('normal'),
-                        ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Q版更可爱，正常版更清秀',
+                        style: TextStyle(color: Color(0xFF8C7B6B)),
+                      ),
+                      const SizedBox(height: 28),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: _CompanionOptionCard(
+                              title: 'Q版小星',
+                              style: 'chibi',
+                              selected: _selected == 'chibi',
+                              loading: _loading && _selected == 'chibi',
+                              palette: palette,
+                              onTap: _loading ? null : () => _onSelect('chibi'),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: _CompanionOptionCard(
+                              title: '正常版小星',
+                              style: 'normal',
+                              selected: _selected == 'normal',
+                              loading: _loading && _selected == 'normal',
+                              palette: palette,
+                              onTap: _loading ? null : () => _onSelect('normal'),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),

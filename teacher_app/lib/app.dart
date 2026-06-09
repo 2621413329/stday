@@ -9,9 +9,24 @@ import 'features/auth/teacher_register_page.dart';
 import 'features/home/teacher_home_page.dart';
 import 'providers/auth_provider.dart';
 
+final _rootKey = GlobalKey<NavigatorState>();
+
 final routerProvider = Provider<GoRouter>((ref) {
   final auth = ref.watch(authProvider);
+
+  ref.listen<AuthState>(authProvider, (previous, next) {
+    if (previous?.isLoggedIn == true && !next.isLoggedIn) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final ctx = _rootKey.currentContext;
+        if (ctx != null && ctx.mounted) {
+          GoRouter.of(ctx).go('/login');
+        }
+      });
+    }
+  });
+
   return GoRouter(
+    navigatorKey: _rootKey,
     initialLocation: auth.isLoggedIn ? '/home' : '/login',
     redirect: (context, state) {
       final loggedIn = ref.read(authProvider).isLoggedIn;

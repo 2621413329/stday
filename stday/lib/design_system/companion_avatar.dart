@@ -52,6 +52,15 @@ class CompanionAvatarState extends State<CompanionAvatar> with TickerProviderSta
   String get _expression => widget.spec?.expression ?? widget.expression;
   String get _prop => widget.spec?.prop ?? widget.prop;
 
+  String get _paintStyle {
+    if (widget.style == 'chibi' ||
+        widget.style == 'normal' ||
+        widget.style == 'mindscape') {
+      return 'cozy';
+    }
+    return widget.style;
+  }
+
   Color get _tint {
     if (widget.spec != null) return widget.spec!.tint;
     if (widget.companionTint != null) return widget.companionTint!;
@@ -171,13 +180,13 @@ class CompanionAvatarState extends State<CompanionAvatar> with TickerProviderSta
       child: CustomPaint(
         size: Size(widget.size, widget.size * 1.15),
         painter: CompanionPainter(
-          style: widget.style,
+          style: _paintStyle,
           expression: _expression,
           prop: _prop,
           tint: _tint,
           glow: _glow,
           performanceLevel: _perfLevel,
-          showAura: widget.showAura,
+          showAura: _paintStyle == 'cozy' ? false : widget.showAura,
           gender: widget.gender,
         ),
       ),

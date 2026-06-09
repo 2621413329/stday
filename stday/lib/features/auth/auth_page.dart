@@ -6,6 +6,7 @@ import '../../core/api/api_client.dart';
 import '../../core/theme/mood_theme.dart';
 import '../../data/repositories/app_repository.dart';
 import '../../design_system/companion_avatar.dart';
+import '../../design_system/password_text_field.dart';
 import '../../design_system/growth_island_rules_sheet.dart';
 import '../../design_system/island_chip.dart';
 import '../../design_system/island_decorations.dart';
@@ -81,18 +82,18 @@ class _AuthPageState extends ConsumerState<AuthPage> {
           child: LayoutBuilder(
             builder: (context, constraints) {
               return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
+                ),
                 padding: EdgeInsets.fromLTRB(
                   20,
                   8,
                   20,
                   24 + MediaQuery.viewInsetsOf(context).bottom,
                 ),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                  child: IntrinsicHeight(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
                         Align(
                           alignment: Alignment.centerLeft,
                           child: IconButton(
@@ -149,17 +150,9 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        TextField(
+                        PasswordTextField(
                           controller: _passCtrl,
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            labelText: '密码',
-                            filled: true,
-                            fillColor: palette.card,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(18),
-                            ),
-                          ),
+                          fillColor: palette.card,
                           onSubmitted: (_) {
                             if (!_loading) _submit();
                           },
@@ -174,7 +167,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                             ),
                           ),
                         ],
-                        const Spacer(),
+                        const SizedBox(height: 32),
                         IslandPrimaryAction(
                           label: '登录',
                           loading: _loading,
@@ -188,8 +181,6 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                           child: const Text('还没有账号？去注册'),
                         ),
                       ],
-                    ),
-                  ),
                 ),
               );
             },

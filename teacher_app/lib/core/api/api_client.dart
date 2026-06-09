@@ -3,8 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../config/app_config.dart';
 import '../../providers/auth_provider.dart';
+import 'api_session.dart';
 
 final dioProvider = Provider<Dio>((ref) {
+  registerForceRelogin(() async {
+    if (ref.read(authProvider).isLoggedIn) {
+      await ref.read(authProvider.notifier).logout();
+    }
+  });
+
   final dio = Dio(
     BaseOptions(
       baseUrl: AppConfig.apiBaseUrl,
@@ -21,6 +28,10 @@ final dioProvider = Provider<Dio>((ref) {
           options.headers['Authorization'] = 'Bearer $token';
         }
         handler.next(options);
+      },
+      onError: (error, handler) async {
+        await forceReloginIfNeeded();
+        handler.next(error);
       },
     ),
   );
@@ -41,15 +52,18 @@ Future<T> unwrap<T>(Future<Response<dynamic>> call, T Function(dynamic json) par
     final response = await call;
     final body = response.data;
     if (body is! Map<String, dynamic>) {
+      await forceReloginIfNeeded();
       throw ApiException('响应格式错误');
     }
     final code = body['code'] as int? ?? 500;
     final message = body['message'] as String? ?? '请求失败';
     if (code != 200) {
+      await forceReloginIfNeeded();
       throw ApiException(message, code);
     }
     return parse(body['data']);
   } on DioException catch (e) {
+    await forceReloginIfNeeded();
     final response = e.response;
     if (response != null) {
       final body = response.data;

@@ -76,6 +76,40 @@ class DailyMomentModel {
     return const [];
   }
 
+  /// 故事总结话语（生成时固定 3 条，详情页点击小人随机展示其一）。
+  List<String> get storySummaryLines {
+    final raw = visualPayload['story_summary_lines'];
+    if (raw is List) {
+      final lines = raw
+          .map((e) => '$e'.trim())
+          .where((line) => line.isNotEmpty)
+          .toList();
+      if (lines.isNotEmpty) return lines;
+    }
+    if (note != null && note!.trim().isNotEmpty) {
+      final snippet = note!.trim();
+      final clipped = snippet.length > 24 ? '${snippet.substring(0, 24)}…' : snippet;
+      return [
+        '我记得你说：$clipped',
+        '这一刻的心情，小岛替你收好了',
+        '每次点我，我都会陪你回味这件事',
+      ];
+    }
+    if (eventTags.isNotEmpty) {
+      final tagLine = eventTags.where((t) => t != '自定义').join(' · ');
+      return [
+        '关于$tagLine的这件事，值得被记住',
+        '当时的心情，我都替你收在小岛上了',
+        '点我，我会用不同的话陪你回味',
+      ];
+    }
+    return const [
+      '这一刻的心情，小岛替你收好了',
+      '每次点我，我都会陪你回味这件事',
+      '你的故事，值得被温柔记住',
+    ];
+  }
+
   String? get performanceHint => visualPayload['performance_hint'] as String?;
 
   factory DailyMomentModel.fromJson(Map<String, dynamic> json) {
