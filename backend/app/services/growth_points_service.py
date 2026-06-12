@@ -92,6 +92,8 @@ class GrowthPointsService:
             d = m.moment_date
             act = day_map.setdefault(d, DayActivity())
             act.mood_recorded = True
+            # 写今日故事时后端会自动整理当日总结，有故事即视为完成「写一篇今日故事」。
+            act.ai_summary_done = True
             note = (m.note or "").strip()
             if note and len(note) >= MIN_DETAIL_NOTE_LEN and m.event_tags:
                 act.detail_complete = True
