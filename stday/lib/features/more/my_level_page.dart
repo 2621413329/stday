@@ -353,7 +353,8 @@ class _XpGuideCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final moodDone = (summary.todayMood ?? '').trim().isNotEmpty;
     final detailDone = _todayHasDetailRecord;
-    final aiDone = checkIn?.checkedInToday ?? false;
+    final aiDone =
+        todayMoments.isNotEmpty || (checkIn?.checkedInToday ?? false);
     final activeToday = moodDone ||
         detailDone ||
         aiDone ||

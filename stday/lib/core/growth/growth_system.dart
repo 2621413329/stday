@@ -89,6 +89,8 @@ class GrowthSystem {
       final d = _calendar(m.momentDate);
       final act = dayMap.putIfAbsent(d, () => _DayAct());
       act.mood = true;
+      // 写今日故事时会自动整理当日总结，有故事即视为完成。
+      act.ai = true;
       final note = (m.note ?? '').trim();
       if (note.length >= minDetailNoteLen && m.eventTags.isNotEmpty) {
         act.detail = true;
