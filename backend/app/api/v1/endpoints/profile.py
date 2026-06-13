@@ -14,11 +14,13 @@ from app.schemas.common import ResponseModel
 from app.schemas.growth import EmotionFragmentSummaryRead, GrowthSummaryRead
 from app.schemas.growth_observation import StudentGrowthObservationRead
 from app.schemas.profile import (
+    CompanionRoleRead,
     DailyMomentCreate,
     DailyMomentRead,
     DailyMoodReportRead,
     DailyMoodReportUpload,
     MoodReportCheckInRead,
+    ProfileCompanionRoleUpdate,
     ProfileCompanionUpdate,
     ProfileGenderUpdate,
     ProfileMoodUpdate,
@@ -64,16 +66,42 @@ async def update_nickname(
     )
 
 
+@router.get("/companion-roles", response_model=ResponseModel[list[CompanionRoleRead]])
+async def list_companion_roles():
+    """可选登岛伙伴角色列表。"""
+    items = ProfileService.list_companion_roles()
+    return ResponseModel(data=[CompanionRoleRead(**item) for item in items])
+
+
+@router.patch("/companion-role", response_model=ResponseModel[ProfileRead])
+async def update_companion_role(
+    payload: ProfileCompanionRoleUpdate,
+    db: DBSession,
+    current_user: User = Depends(get_current_user),
+):
+    service = get_profile_service(db)
+    await service.ensure_profile(current_user)
+    profile = await service.update_companion_role(current_user.id, payload)
+    return ResponseModel(
+        data=await service.to_profile_read(profile, current_user),
+        message="角色已更新",
+    )
+
+
 @router.patch("/gender", response_model=ResponseModel[ProfileRead])
 async def update_gender(
     payload: ProfileGenderUpdate,
     db: DBSession,
     current_user: User = Depends(get_current_user),
 ):
+    """兼容旧客户端：male/female 会映射为 companion_role_id。"""
     service = get_profile_service(db)
     await service.ensure_profile(current_user)
     profile = await service.update_gender(current_user.id, payload)
-    return ResponseModel(data=profile)
+    return ResponseModel(
+        data=await service.to_profile_read(profile, current_user),
+        message="角色已更新",
+    )
 
 
 @router.patch("/companion", response_model=ResponseModel[ProfileRead])
@@ -217,6 +245,21 @@ async def get_mood_report_check_in(
     await service.ensure_profile(current_user)
     data = await service.get_mood_report_check_in(current_user.id, days=days)
     return ResponseModel(data=MoodReportCheckInRead(**data))
+
+
+@router.get("/mood-reports", response_model=ResponseModel[list[DailyMoodReportRead]])
+async def list_mood_reports(
+    db: DBSession,
+    current_user: User = Depends(get_current_user),
+    period: str = Query(default="today", pattern="^(today|week|month|year)$"),
+):
+    """学生端：按周期列出已上传的心情 AI 总结。"""
+    service = get_profile_service(db)
+    await service.ensure_profile(current_user)
+    items = await service.list_mood_reports_for_period(
+        current_user.id, period=period
+    )
+    return ResponseModel(data=[DailyMoodReportRead(**item) for item in items])
 
 
 @router.post("/mood-report/upload", response_model=ResponseModel[DailyMoodReportRead])
